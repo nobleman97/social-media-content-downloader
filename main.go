@@ -50,7 +50,7 @@ func getTicTok(w http.ResponseWriter, r *http.Request) {
 }
 
 func loadHome(w http.ResponseWriter, r *http.Request) {
-	html, err := template.ParseFiles("home.html")
+	html, err := template.ParseFiles("index.html")
 	checkErr(err)
 
 	html.Execute(w, nil)
@@ -58,9 +58,9 @@ func loadHome(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
-	http.HandleFunc("/home", loadHome)
+	http.HandleFunc("/", loadHome)
 	http.HandleFunc("/vid_download/", getTicTok)
 
-	log.Fatal(http.ListenAndServe(":8090", nil))
+	log.Fatal(http.ListenAndServe(":8080", nil))
 
 }
