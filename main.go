@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type showMe struct {
@@ -58,9 +60,12 @@ func loadHome(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
-	http.HandleFunc("/", loadHome)
-	http.HandleFunc("/vid_download/", getTicTok)
+	router := mux.NewRouter()
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	router.HandleFunc("/", loadHome).Methods("GET")
+	router.HandleFunc("/vid_download/", getTicTok).Methods("GET")
+
+	err := http.ListenAndServe(":8080", router)
+	checkErr(err)
 
 }
