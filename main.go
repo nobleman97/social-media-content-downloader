@@ -7,8 +7,10 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 
-	"github.com/gorilla/mux"
+	// "github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 type showMe struct {
@@ -22,13 +24,17 @@ func checkErr(err error) {
 }
 
 func getTicTok(w http.ResponseWriter, r *http.Request) {
+	errEnv := godotenv.Load(".env")
+	checkErr(errEnv)
+	var apiKeyHolder = os.Getenv("API_KEY")
+
 	urlFromUser := r.FormValue("inputValue")
 	addon := "https://tiktok-downloader-download-tiktok-videos-without-watermark.p.rapidapi.com/vid/index?url="
 
 	url := fmt.Sprint(addon + urlFromUser)
 	req, _ := http.NewRequest("GET", url, nil)
 
-	req.Header.Add("x-rapidapi-key", "61e2ec60a6msh4f819358dd504ccp1d4de3jsnc408dd89b4bd")
+	req.Header.Add("x-rapidapi-key", apiKeyHolder)
 	req.Header.Add("x-rapidapi-host", "tiktok-downloader-download-tiktok-videos-without-watermark.p.rapidapi.com")
 
 	res, err := http.DefaultClient.Do(req)
@@ -60,12 +66,16 @@ func loadHome(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
-	router := mux.NewRouter()
+	/* When DEPLOYING, I will use...
+	
+	port := os.Getenv("PORT")*/
 
-	router.HandleFunc("/", loadHome).Methods("GET")
-	router.HandleFunc("/vid_download/", getTicTok).Methods("GET")
+	port := "8080"
 
-	err := http.ListenAndServe(":8080", router)
+	http.HandleFunc("/", loadHome)
+	http.HandleFunc("/vid_download/", getTicTok)
+
+	err := http.ListenAndServe(":"+port, nil)
 	checkErr(err)
 
 }
